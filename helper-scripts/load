@@ -1,0 +1,18 @@
+#!/bin/sh
+# This script reloads the proxy driver
+
+ARG=
+if [ "n$1" = "n" ]; then
+        echo Default debug
+else
+        ARG="debug=$1"
+        echo Arg: $ARG
+fi
+
+rmmod g_proxy
+if [ -f g_proxy.ko ]; then
+	insmod g_proxy.ko $ARG
+else
+	modprobe g_proxy $ARG
+fi
+

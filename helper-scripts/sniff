@@ -1,0 +1,156 @@
+#!/bin/sh
+# All-in-one sniffing solution
+
+# Unload everything
+umount /dev/gadget 2>/dev/null
+rmmod gadgetfs 2>/dev/null
+rmmod g_ether 2>/dev/null
+rmmod g_proxy 2>/dev/null
+rmmod musb_hdrc 2>/dev/null
+
+DEFAULT=
+echo "List of devices:"
+for file in /sys/bus/usb/drivers/usb/*
+do
+	# Only interested in directories
+	[ ! -d $file ] && continue
+	# Ignore hubs
+	grep -q "^0$" $file/maxchild || continue
+	SHORT=`echo $file | sed -e s!.*\/!!`
+	BUS=`cat $file/busnum`
+	DEV=`cat $file/devnum`
+	echo -n "$SHORT: "
+	lsusb -s "$BUS:$DEV"
+	DEFAULT=$SHORT
+done
+
+echo "===="
+
+if [ "$DEFAULT" = "" ]; then
+	echo "No available device to sniff."
+	exit 1
+fi
+
+DEVICE=
+
+while [ "$DEVICE" = "" ]; do
+	echo -n "Choose the device to sniff [default:$DEFAULT]: "
+	read DEVICE
+	if [ "$DEVICE" = "" ]; then
+		DEVICE=$DEFAULT
+	fi
+	if [ ! -d /sys/bus/usb/drivers/usb/$DEVICE ]; then
+		echo "Invalid input"
+		DEVICE=
+	fi
+done
+
+echo "Chosen device: $DEVICE"
+
+BUS=`cat /sys/bus/usb/drivers/usb/$DEVICE/busnum`
+DEV=`cat /sys/bus/usb/drivers/usb/$DEVICE/devnum`
+
+STATE=0
+TMP=`mktemp -t`
+TMPLIST=`mktemp -t`
+
+cat /proc/bus/usb/devices | while read line; do
+	if [ $STATE = 1 ]; then
+		if echo $line | grep -q "^$"; then
+			STATE=0			
+		elif echo $line | grep -q "^E:"; then
+#			echo $line
+			EPNUM=`echo $line | sed -e 's/.*Ad=[08 ]\([0-9A-F]\).*/\1/'`
+			EPDIR=`echo $line | sed -e 's/.*Ad=[08 ][0-9A-F](\([IO]\)).*/\1/' | sed -e s/I/in/ | sed -e s/O/out/`
+			EPSIZE=`echo $line | sed -e 's/.*MxPS= *\([0-9]*\) .*/\1/'`
+
+			EPNUM="0x$EPNUM"
+			let EPNUM=EPNUM+0
+
+			VARNAME=ep$EPNUM$EPDIR
+			VARVAL=`eval "echo \\$$VARNAME"`
+			if [ x$VARVAL = x ]; then
+				eval $VARNAME=$EPSIZE
+				echo $VARNAME=$EPSIZE >> $TMP
+				echo $VARNAME >> $TMPLIST		
+			elif [ ${EPSIZE} -gt $VARVAL ]; then
+				eval $VARNAME=$EPSIZE
+				echo $VARNAME=$EPSIZE >> $TMP
+			fi
+		fi
+	else
+		if echo $line | grep -q "T:.*Bus=[ 0]*$BUS.*Dev#=[ 0]*$DEV"; then
+			STATE=1
+		fi
+	fi
+done
+
+ARG=""
+SIZELIST="32 64 128 256 512 1024 2048 4096"
+eval `cat $TMP`
+for EP in `cat $TMPLIST | sort -n`; do
+	MAXPKT=`eval "echo \\$$EP"`
+	OK=0
+	for SL in $SIZELIST; do
+		if [ $MAXPKT -lt $SL ]; then
+			if [ x$ARG = x ]; then
+				ARG="$EP:$SL"
+			else
+				ARG="$ARG,$EP:$SL"
+			fi
+			break
+		fi
+	done
+done
+
+echo "Chosen FIFO configuration: $ARG"
+
+rm $TMP
+rm $TMPLIST
+
+echo $DEVICE > /sys/bus/usb/drivers/usb/unbind
+echo "Device unbound!"
+
+if [ -f musb_hdrc.ko ]; then
+	insmod musb_hdrc.ko fifo_config=$ARG
+else
+	modprobe musb_hdrc fifo_config=$ARG
+fi
+
+# USB mon
+modprobe usbmon 2>/dev/null
+mount -t debugfs none /sys/kernel/debug/ 2>/dev/null
+
+echo "Starting tcpdump"
+# This assumes /media/ram is mounted
+mv -f /media/ram/dump /media/ram/dump.old
+tcpdump -i usbmon1 -w /media/ram/dump &
+
+sleep 1
+
+echo "Loading proxy driver..."
+if [ -f g_proxy.ko ]; then
+	insmod g_proxy.ko
+else
+	modprobe g_proxy
+fi
+
+for i in `seq 1 4`; do
+	sleep 2
+	echo "Device should work now..."
+done
+echo "Press enter to stop logging."
+read
+pkill tcpdump
+rmmod g_proxy
+rmmod musb_hdrc
+rmmod usbmon
+#if [ -f musb_hdrc.ko ]; then
+#	insmod musb_hdrc.ko
+#else
+#	modprobe musb_hdrc
+#fi	
+#modprobe g_ether
+echo "Dump is available in /media/ram/dump"
+echo "Replug your device to use it again"
+

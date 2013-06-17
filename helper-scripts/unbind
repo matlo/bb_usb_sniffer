@@ -1,0 +1,45 @@
+#!/bin/sh
+# Usage: ./unbind [VENDOR PRODUCT]
+# This script finds the device with vendor and product ID in parameters
+# (e.g., 046d c00e).
+# It then unbinds it from the usual usb driver, so that it can
+# be claimed by the proxy device driver.
+# If no vendor/product ID is set, it finds and unbinds the first device that
+# is not a USB hub.
+
+VENDOR=$1
+PRODUCT=$2
+
+if [ n$VENDOR = n ] || [ n$PRODUCT = n ]; then
+	echo "Unbinding the first non-hub device..."
+
+	ID=`grep -l "^0$" /sys/bus/usb/drivers/usb/*/maxchild | sed -e "s|/sys/bus/usb/drivers/usb/\(.*\)/maxchild|\1|" | head -n 1`
+
+	VENDOR=`cat /sys/bus/usb/drivers/usb/$ID/idVendor`
+	PRODUCT=`cat /sys/bus/usb/drivers/usb/$ID/idProduct`
+
+	echo $ID > /sys/bus/usb/drivers/usb/unbind
+
+	echo "Device found ($VENDOR:$PRODUCT), and unbound!"
+
+	exit 0
+fi
+
+LIST=`grep -l $VENDOR /sys/bus/usb/drivers/usb/*/idVendor | sed -e "s|\(/sys/bus/usb/drivers/usb/.*\)/idVendor|\1/idProduct|"`
+
+if [ n$LIST = n ]; then
+	echo "No such device!"
+	exit 1
+fi
+
+IDS=`grep -l $PRODUCT $LIST | sed -e "s|/sys/bus/usb/drivers/usb/\(.*\)/idProduct|\1|"`
+
+if [ n$IDS = n ]; then
+	echo "No such device!"
+	exit 1
+fi
+
+echo $IDS > /sys/bus/usb/drivers/usb/unbind
+
+echo "Device found, and unbound!"
+

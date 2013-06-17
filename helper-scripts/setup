@@ -1,0 +1,20 @@
+#!/bin/sh
+# This script setups the BeagleBoard for sniffing
+# Usage: ./setup [params]
+#   [params]: Optional parameters, for the musb_hdrc module,
+#             e.g. debug=3, and/or fifo_mode=6
+
+echo 8 > /proc/sys/kernel/printk
+umount /dev/gadget
+rmmod gadgetfs
+rmmod g_ether
+rmmod g_proxy
+rmmod musb_hdrc
+if [ -f musb_hdrc.ko ]; then
+	insmod musb_hdrc.ko $*
+else
+	modprobe musb_hdrc $*
+fi
+modprobe usbmon
+mount -t debugfs none /sys/kernel/debug/
+echo 30 > /proc/sys/kernel/hung_task_timeout_secs
