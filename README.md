@@ -1,7 +1,7 @@
 bb_usb_sniffer
 ==============
 
-Tools to set up a usb sniffer on a beagleboard xM. 
+Tools to set up a usb sniffer on a beagleboard xM.  
 This is based on the work of Nicolas Boichat.
 
 Sources:
