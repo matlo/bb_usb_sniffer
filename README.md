@@ -66,7 +66,7 @@ sudo cp arch/arm/boot/uImage /media/bb/Angstrom/boot/uImage
 7. Compile and install the modules:  
 cd ~/bb_usb_sniffer/beagleboard-usbsniffer-kernel  
 make ARCH=arm CROSS_COMPILE=/usr/local/angstrom/arm/bin/arm-angstrom-linux-gnueabi- modules  
-sudo make ARCH=arm INSTALL_MOD_PATH=/media/bb/Angstrom modules_install
+sudo make INSTALL_MOD_PATH=/media/bb/Angstrom modules_install
 
 8. Copy libpcap and tcpdump packages:  
 cd ~/bb_usb_sniffer  
