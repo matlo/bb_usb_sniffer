@@ -5,81 +5,81 @@ Tools to set up a usb sniffer on a beagleboard xM.
 This is based on the work of Nicolas Boichat.
 
 Sources:
-http://elinux.org/BeagleBoard/GSoC/2010_Projects/USBSniffer
-http://downloads.angstrom-distribution.org/demo/beagleboard/
-http://beagleboard.org/linux
+http://elinux.org/BeagleBoard/GSoC/2010_Projects/USBSniffer  
+http://downloads.angstrom-distribution.org/demo/beagleboard/  
+http://beagleboard.org/linux  
 
 To set up the sniffer quickly:
 
-cd ~
-wget http://gimx.fr/download/bb_sniffer_small.img.7z
-7zr e bb_sniffer_small.img.7z
-sudo dd if=bb_sniffer_small.img of=/dev/sdX
+cd ~  
+wget http://gimx.fr/download/bb_sniffer_small.img.7z  
+7zr e bb_sniffer_small.img.7z  
+sudo dd if=bb_sniffer_small.img of=/dev/sdX  
 where X is the device letter of the sd card (e.g. /dev/sdc, /dev/sdd...).
 
-Before removing the sd card, make sure to run:
+Before removing the sd card, make sure to run:  
 sync
 
 To set up the sniffer from scratch:
 
-Clone this git repo:
-cd ~
+Clone this git repo:  
+cd ~  
 git clone git://github.com/matlo/bb_usb_sniffer.git
 
-Format the sd card:
-cd ~/bb_usb_sniffer/sdcard
-sudo sh mkcard.txt /dev/sdX
-where X is the device letter of the sd card (e.g. /dev/sdc, /dev/sdd...)
-sudo mkdir -p /media/bb/boot /media/bb/Angstrom
-sudo mount /dev/sdX1 /media/bb/boot
+Format the sd card:  
+cd ~/bb_usb_sniffer/sdcard  
+sudo sh mkcard.txt /dev/sdX  
+where X is the device letter of the sd card (e.g. /dev/sdc, /dev/sdd...)  
+sudo mkdir -p /media/bb/boot /media/bb/Angstrom  
+sudo mount /dev/sdX1 /media/bb/boot  
 sudo mount /dev/sdX2 /media/bb/Angstrom
 
-Install the bootloader:
-cd ~/bb_usb_sniffer/sdcard
-wget http://downloads.angstrom-distribution.org/demo/beagleboard/MLO
-wget http://downloads.angstrom-distribution.org/demo/beagleboard/u-boot.img
-wget https://raw.github.com/matlo/bb_usb_sniffer/master/sdcard/uEnv.txt
+Install the bootloader:  
+cd ~/bb_usb_sniffer/sdcard  
+wget http://downloads.angstrom-distribution.org/demo/beagleboard/MLO  
+wget http://downloads.angstrom-distribution.org/demo/beagleboard/u-boot.img  
+wget https://raw.github.com/matlo/bb_usb_sniffer/master/sdcard/uEnv.txt  
 sudo cp MLO u-boot.img uEnv.txt /media/bb/boot
 
-Copy the rootfs:
-cd ~/bb_usb_sniffer
-wget http://downloads.angstrom-distribution.org/demo/beagleboard/Angstrom-Beagleboard-demo-image-glibc-ipk-2011.1-beagleboard.rootfs.tar.bz2
+Copy the rootfs:  
+cd ~/bb_usb_sniffer  
+wget http://downloads.angstrom-distribution.org/demo/beagleboard/Angstrom-Beagleboard-demo-image-glibc-ipk-2011.1-beagleboard.rootfs.tar.bz2  
 sudo tar xjvf Angstrom-Beagleboard-demo-image-glibc-ipk-2011.1-beagleboard.rootfs.tar.bz2 -C /media/bb/Angstrom
 
-Get a toolchain:
-mkdir ~/bb_usb_sniffer/tools
-cd ~/bb_usb_sniffer/tools
-wget http://www.angstrom-distribution.org/toolchains/angstrom-2011.03-x86_64-linux-armv7a-linux-gnueabi-toolchain.tar.bz2
+Get a toolchain:  
+mkdir ~/bb_usb_sniffer/tools  
+cd ~/bb_usb_sniffer/tools  
+wget http://www.angstrom-distribution.org/toolchains/angstrom-2011.03-x86_64-linux-armv7a-linux-gnueabi-toolchain.tar.bz2  
 sudo tar xjvf angstrom-2011.03-x86_64-linux-armv7a-linux-gnueabi-toolchain.tar.bz2 -C /
 
-Compile the kernel:
-cd ~/bb_usb_sniffer
-git clone git://gitorious.org/beagleboard-usbsniffer/beagleboard-usbsniffer-kernel.git
-cd beagleboard-usbsniffer-kernel
-git checkout origin/branch -b branch
-sudo apt-get install u-boot-tools
-make ARCH=arm CROSS_COMPILE=/usr/local/angstrom/arm/bin/arm-angstrom-linux-gnueabi- uImage
+Compile the kernel:  
+cd ~/bb_usb_sniffer  
+git clone git://gitorious.org/beagleboard-usbsniffer/beagleboard-usbsniffer-kernel.git  
+cd beagleboard-usbsniffer-kernel  
+git checkout origin/branch -b branch  
+sudo apt-get install u-boot-tools  
+make ARCH=arm CROSS_COMPILE=/usr/local/angstrom/arm/bin/arm-angstrom-linux-gnueabi- uImage  
 sudo cp arch/arm/boot/uImage /media/bb/Angstrom/boot/uImage
 
-Compile and install the modules:
-cd ~/bb_usb_sniffer/beagleboard-usbsniffer-kernel
-make ARCH=arm CROSS_COMPILE=/usr/local/angstrom/arm/bin/arm-angstrom-linux-gnueabi- modules
+Compile and install the modules:  
+cd ~/bb_usb_sniffer/beagleboard-usbsniffer-kernel  
+make ARCH=arm CROSS_COMPILE=/usr/local/angstrom/arm/bin/arm-angstrom-linux-gnueabi- modules  
 sudo make ARCH=arm INSTALL_MOD_PATH=/media/bb/Angstrom modules_install
 
-Copy libpcap and tcpdump packages:
-cd ~/bb_usb_sniffer
-wget http://www.angstrom-distribution.org/feeds/2011.03/ipk/glibc/armv7a/base/tcpdump_4.1.1-r1.5_armv7a.ipk
-wget http://www.angstrom-distribution.org/feeds/2011.03/ipk/glibc/armv7a/base/libpcap_1.1.1-r1.6_armv7a.ipk
+Copy libpcap and tcpdump packages:  
+cd ~/bb_usb_sniffer  
+wget http://www.angstrom-distribution.org/feeds/2011.03/ipk/glibc/armv7a/base/tcpdump_4.1.1-r1.5_armv7a.ipk  
+wget http://www.angstrom-distribution.org/feeds/2011.03/ipk/glibc/armv7a/base/libpcap_1.1.1-r1.6_armv7a.ipk  
 sudo cp tcpdump_4.1.1-r1.5_armv7a.ipk libpcap_1.1.1-r1.6_armv7a.ipk /media/bb/Angstrom/home/root
 
-Copy the helper-scripts:
+Copy the helper-scripts:  
 sudo cp ~/bb_usb_sniffer/helper-scripts/* /media/bb/Angstrom/home/root
 
-Final steps:
-Before removing the sdcard, make sure to run sync.
-Boot angstrom and login as root.
-Run depmod -a on the beagleboard for the kernel to find the modules.
-Install libpcap and tcpdump:
-opkg install libpcap_1.1.1-r1.6_armv7a.ipk tcpdump_4.1.1-r1.5_armv7a.ipk
+Final steps:  
+Before removing the sdcard, make sure to run sync.  
+Boot angstrom and login as root.  
+Run depmod -a on the beagleboard for the kernel to find the modules.  
+Install libpcap and tcpdump:  
+opkg install libpcap_1.1.1-r1.6_armv7a.ipk tcpdump_4.1.1-r1.5_armv7a.ipk  
 rm libpcap_1.1.1-r1.6_armv7a.ipk tcpdump_4.1.1-r1.5_armv7a.ipk
 
