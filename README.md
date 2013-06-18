@@ -21,6 +21,11 @@ sudo dd if=bb_sniffer_small.img of=/dev/sdX
 (where X is the device letter of the sd card, e.g. /dev/sdc, /dev/sdd...)  
 Before removing the sd card, make sure to run sync.
 
+Sniff!
+------
+
+Read the instructions at http://elinux.org/BeagleBoard/GSoC/2010_Projects/USBSniffer#Usage_instructions
+
 Set up the sniffer from scratch
 -------------------------------
 
