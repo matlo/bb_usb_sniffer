@@ -4,7 +4,7 @@ bb_usb_sniffer
 Tools to set up a usb sniffer on a beagleboard xM.  
 This is based on the work of Nicolas Boichat.
 
-Sources:
+Sources:  
 http://elinux.org/BeagleBoard/GSoC/2010_Projects/USBSniffer  
 http://downloads.angstrom-distribution.org/demo/beagleboard/  
 http://beagleboard.org/linux  
@@ -16,9 +16,7 @@ wget http://gimx.fr/download/bb_sniffer_small.img.7z
 7zr e bb_sniffer_small.img.7z  
 sudo dd if=bb_sniffer_small.img of=/dev/sdX  
 where X is the device letter of the sd card (e.g. /dev/sdc, /dev/sdd...).
-
-Before removing the sd card, make sure to run:  
-sync
+Before removing the sd card, make sure to run sync.
 
 To set up the sniffer from scratch:
 
