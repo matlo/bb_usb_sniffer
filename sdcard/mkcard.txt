@@ -15,6 +15,11 @@ fi
 
 DRIVE=$1
 
+for PART in `ls $DRIVE[0-9]*`
+do
+  umount $PART 2> /dev/null
+done
+
 dd if=/dev/zero of=$DRIVE bs=1024 count=1024
 
 SIZE=`fdisk -l $DRIVE | grep Disk | grep bytes | awk '{print $5}'`
