@@ -24,7 +24,8 @@ Before removing the sd card, make sure to run sync.
 Sniff!
 ------
 
-Read the instructions at http://elinux.org/BeagleBoard/GSoC/2010_Projects/USBSniffer#Usage_instructions
+Read the instructions at http://elinux.org/BeagleBoard/GSoC/2010_Projects/USBSniffer#Usage_instructions.  
+Note that you don't need a USB hub for low/full speed devices if you use a beagleboard xM, because there's one on the board.  
 
 Set up the sniffer from scratch
 -------------------------------
