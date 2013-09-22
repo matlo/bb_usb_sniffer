@@ -64,6 +64,7 @@ sudo tar xjvf angstrom-2011.03-x86_64-linux-armv7a-linux-gnueabi-toolchain.tar.b
 cd ~/bb_usb_sniffer  
 git clone git://gitorious.org/beagleboard-usbsniffer/beagleboard-usbsniffer-kernel.git  
 cd beagleboard-usbsniffer-kernel  
+patch -p1 < ../patches/xmc.patch
 sudo apt-get install u-boot-tools  
 make ARCH=arm CROSS_COMPILE=/usr/local/angstrom/arm/bin/arm-angstrom-linux-gnueabi- uImage  
 sudo cp arch/arm/boot/uImage /media/bb/Angstrom/boot/uImage
