@@ -76,8 +76,8 @@ sudo make ARCH=arm INSTALL_MOD_PATH=/media/bb/Angstrom modules_install
 
 8. Copy libpcap and tcpdump packages:  
 cd ~/bb_usb_sniffer  
-wget http://www.angstrom-distribution.org/feeds/2011.03/ipk/glibc/armv7a/base/tcpdump_4.1.1-r1.5_armv7a.ipk  
-wget http://www.angstrom-distribution.org/feeds/2011.03/ipk/glibc/armv7a/base/libpcap_1.1.1-r1.6_armv7a.ipk  
+wget http://feeds.angstrom-distribution.org/feeds/2011.03/ipk/glibc/armv7a/base/tcpdump_4.1.1-r1.5_armv7a.ipk  
+wget http://feeds.angstrom-distribution.org/feeds/2011.03/ipk/glibc/armv7a/base/libpcap_1.1.1-r1.6_armv7a.ipk  
 sudo cp tcpdump_4.1.1-r1.5_armv7a.ipk libpcap_1.1.1-r1.6_armv7a.ipk /media/bb/Angstrom/home/root
 
 9. Copy the helper-scripts:  
