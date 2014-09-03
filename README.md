@@ -45,7 +45,6 @@ Set up the sniffer from scratch
     sudo sh mkcard.txt /dev/sdX
     ```
   (where X is the device letter of the sd card e.g. /dev/sdc, /dev/sdd...)
-
     ```
     sudo mkdir -p /media/bb/boot /media/bb/Angstrom
     sudo mount /dev/sdX1 /media/bb/boot
