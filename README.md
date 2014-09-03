@@ -43,13 +43,11 @@ Set up the sniffer from scratch
     ```
     cd ~/bb_usb_sniffer/sdcard
     sudo sh mkcard.txt /dev/sdX
-    ```
-  (where X is the device letter of the sd card e.g. /dev/sdc, /dev/sdd...)
-    ```
     sudo mkdir -p /media/bb/boot /media/bb/Angstrom
     sudo mount /dev/sdX1 /media/bb/boot
     sudo mount /dev/sdX2 /media/bb/Angstrom
     ```
+  (where X is the device letter of the sd card e.g. /dev/sdc, /dev/sdd...)  
 3. Install the bootloader:
 
     ```
