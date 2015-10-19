@@ -76,7 +76,7 @@ Set up the sniffer from scratch
 
     ```
     cd ~/bb_usb_sniffer
-    git clone git://gitorious.org/beagleboard-usbsniffer/beagleboard-usbsniffer-kernel.git
+    git clone https://github.com/matlo/beagleboard-usbsniffer-kernel.git
     cd beagleboard-usbsniffer-kernel
     patch -p1 < ../patches/xmc.patch
     sudo apt-get install u-boot-tools
